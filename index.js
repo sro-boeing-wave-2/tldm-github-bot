@@ -1,13 +1,12 @@
 /**
  * This is the entry point for your Probot App.
  * @param {import('probot').Application} app - Probot's Application class.
- */
+ */ 
 
 module.exports = app => {
 
   const signalR = require('@aspnet/signalr');
-  const octokit = require('@octokit/rest');
-
+  const octokit = require('@octokit/rest')();
 
   XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
   WebSocket = require('websocket').w3cwebsocket;
@@ -59,8 +58,6 @@ module.exports = app => {
     'User-Agent': 'Super Agent/0.0.1',
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-
-  
 
   octokit.authenticate({
     type: 'oauth',
