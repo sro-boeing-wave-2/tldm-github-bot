@@ -42,8 +42,6 @@ module.exports = app => {
     return context.github.issues.createComment(issueComment);
   })
 
-
-
   const user = "bot";
   const channelId = "5b9609dc52bde445e058eb8c";
 
@@ -53,6 +51,7 @@ module.exports = app => {
       .catch(err => console.error(err.toString()));
   }, 3000);
 
+
   var request = require('request');
 
   // Set the headers
@@ -61,8 +60,9 @@ module.exports = app => {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
 
+  
 
-  octokit.AuthOAuthSecret({
+  octokit.authenticate({
     type: 'oauth',
     key: 'Iv1.c540ce83a87ce61f',
     secret: '1f3e6d08d4788c46d516a94e7b2f7e9a09487799'
@@ -92,7 +92,6 @@ module.exports = app => {
     }
 
     if (message.startsWith('/github list')) {
-      octokit.authorization.check({client_id: 'Iv1.c540ce83a87ce61f', client_secret: '1f3e6d08d4788c46d516a94e7b2f7e9a09487799'})
       result = octokit.issues.addAssigneesToIssue({owner: "rishabh120296", repo: "assignment1", number: "20", assignees: "rishabh120296"})
       var context;
       context.github.issues.createComment("Hi");
