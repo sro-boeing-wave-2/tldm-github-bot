@@ -1,0 +1,62 @@
+{
+  "name": "tldm-github-integration",
+  "version": "1.0.0",
+  "description": "TLDM GitHub Integration",
+  "author": "Rishabh Agrawal <rishabh120296@gmail.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rishabh120296/tldm-github-integration.git"
+  },
+  "homepage": "https://github.com/rishabh120296/tldm-github-integration",
+  "bugs": {
+    "url": "https://github.com/rishabh120296/tldm-github-integration/issues"
+  },
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ],
+  "scripts": {
+    "dev": "nodemon",
+    "start": "probot run ./index.js",
+    "lint": "standard --fix",
+    "test": "jest && standard",
+    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+  },
+  "dependencies": {
+    "@aspnet/signalr": "^1.0.3",
+    "@octokit/rest": "^15.11.1",
+    "octokit": "^1.0.0-hello-world",
+    "probot": "^7.0.0",
+    "request": "^2.88.0",
+    "tslib": "^1.9.3",
+    "websocket": "^1.0.26",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {
+    "jest": "^22.4.3",
+    "nodemon": "^1.17.2",
+    "smee-client": "^1.0.2",
+    "standard": "^10.0.3"
+  },
+  "engines": {
+    "node": ">= 8.3.0"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "nodemonConfig": {
+    "exec": "npm start",
+    "watch": [
+      ".env",
+      "."
+    ]
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  }
+}
