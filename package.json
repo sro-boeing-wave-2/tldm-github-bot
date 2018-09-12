@@ -27,6 +27,8 @@
   "dependencies": {
     "@aspnet/signalr": "^1.0.3",
     "@octokit/rest": "^15.11.1",
+    "axios": "^0.18.0",
+    "mongoose": "^5.2.14",
     "octokit": "^1.0.0-hello-world",
     "probot": "^7.0.0",
     "request": "^2.88.0",
