@@ -10,6 +10,9 @@ module.exports = app => {
 
   const router = app.route('/github');
 
+  const channelId = "5ba0f61fe3eaea16ecef82ff";
+
+
   router.get('/callback', async (req, res) => {
     const { code, state } = req.query;
     console.log(code, state);
@@ -43,34 +46,39 @@ module.exports = app => {
     .build();
 
   connection.start()
-    .then(() => console.log("Connection to hub started"))
+    .then(() => {
+      console.log("Connection to hub started");
+      connection.invoke("sendToAllconnid", "tldm-github-bot@gmail.com")
+        .then(console.log("BOT IS NOW ONLINE!"))
+        .catch(err => console.error(err.toString()));
+
+      var message = {
+        messageId: "",
+        messageBody: "BOT ACTIVATED!",
+        timestamp: new Date().toISOString(),
+        isStarred: true,
+        sender: {
+          id: "101010101010101010101010",
+          emailId: "tldm-github-bot@gmail.com",
+          firstName: "Bot",
+          lastName: "User",
+          userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
+        }
+      };
+      console.log(message);
+      const user = "bot";
+      connection.invoke("sendMessageInChannel", user, message, channelId)
+        .then(console.log("Hub Method Invoked"))
+        .catch(err => console.error(err.toString()));
+
+    })
     .catch(err => console.error(err.toString()));
 
 
   // Your code here
   app.log('Yay, the app was loaded!')
 
-  var message = {
-    messageId: "",
-    messageBody: "BOT ACTIVATED!",
-    timestamp: new Date().toISOString(),
-    isStarred: true,
-    sender: {
-      id: "101010101010101010101010",
-      emailId: "tldm-github-bot@gmail.com",
-      firstName: "Bot",
-      lastName: "User",
-      userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
-    }
-  };
-  console.log(message);
-  const user = "bot";
-  const channelId = "5b98d1d5b740693244f54460";
-  setTimeout(() => {
-    connection.invoke("sendMessageInChannel", user, message, channelId)
-      .then(console.log("Hub Method Invoked"))
-      .catch(err => console.error(err.toString()));
-  }, 3000);
+
 
   app.on('issues.assigned', async context => {
     const issueComment = context.issue({ body: 'Thanks for opening this issue!' })
@@ -95,18 +103,22 @@ module.exports = app => {
     var response = GithubBotModel.find({ repoName: repoName }).then(map => {
       console.log(map);
       var channelId = map[0].channelId;
-      connection.invoke("sendMessageInChannel","bot", message, channelId)
+      connection.invoke("sendMessageInChannel", "bot", message, channelId)
         .then(console.log("Hub Method Invoked"))
         .catch(err => console.error(err.toString()));
       return context.github.issues.createComment(issueComment);
     })
   });
 
+  connection.on("SendToAllconnid", (activeusers) => {
+  });
+
 
   connection.on("SendMessageInChannel", (user, message) => {
-    console.log(message);
 
     if (message.messageBody.startsWith('/github subscribe')) {
+
+      console.log(message);
 
       const githubTLDMMapping = new GithubBotModel({
         repoName: message.messageBody.slice(18),
@@ -136,15 +148,21 @@ module.exports = app => {
     }
 
     if (message.messageBody.startsWith('/github addAssigneeToIssue')) {
-
-      var response = GithubBotModel.find({ channelId: channelId }).then(map => {
-        console.log(map);
+      console.log(message);
+      var message1 = message;
+      GithubBotModel.find({ channelId: channelId }).then(map => {
         if (map[0].access_token != null) {
           octokit.authenticate({
             type: 'token',
             token: map[0].access_token
           });
-          octokit.issues.addAssigneesToIssue({ owner: "palashw", repo: "assignments", number: "9", assignees: "palashw" })
+          console.log(message1);
+          var splitmessage = message1.messageBody.split(" ");
+          owner = splitmessage[2];
+          repo = splitmessage[3];
+          number = splitmessage[4];
+          assignees = splitmessage[5];
+          octokit.issues.addAssigneesToIssue({ owner: owner, repo: repo, number: number, assignees: assignees })
           var message = {
             messageBody: "Issue Assigned",
             timestamp: new Date().toISOString(),
