@@ -17,3 +17,6 @@ before_script:
 
 script:
   - npm start
+
+after_success:
+  - /bin/bash ./deploy.sh
