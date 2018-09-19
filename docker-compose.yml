@@ -1,6 +1,12 @@
-version: '3'
+version: "2"
 services:
-  db:
-    image: 'mvertes/alpine-mongo'
+  web:
+    build: .
     ports:
-      - "27017:27017"
+    - "8080:8080"
+    depends_on:
+    - mongo
+  mongo:
+    image: mongo
+    ports:
+    - "27017:27017"
