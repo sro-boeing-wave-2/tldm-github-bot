@@ -52,11 +52,11 @@ module.exports = app => {
         .then(console.log("BOT IS NOW ONLINE!"))
         .catch(err => console.error(err.toString()));
 
-      axios.get('http://localhost:5004/api/chat/workspaces/userchannels/tldm-github-bot@gmail.com')
+      axios.get('http://172.23.238.230:5004/api/chat/workspaces/userchannels/tldm-github-bot@gmail.com')
         .then(function (response) {
           // handle success
-          console.log(response);
-          response.forEach(channelId => {
+          console.log(response.data);
+          response.data.forEach(channelId => {
             connection.invoke('joinChannel', channelId)
               .catch(err => console.log(err));
           });
@@ -105,21 +105,23 @@ module.exports = app => {
     issue = context.payload.issue.title;
     const user = "bot";
     var repoName = context.payload.repository.full_name;
-    var message = {
-      messageBody: "Issue " + issue + "assigned to " + assignee,
-      timestamp: new Date().toISOString(),
-      isStarred: true,
-      sender: {
-        id: "101010101010101010101010",
-        emailId: "tldm-github-bot@gmail.com",
-        firstName: "Github",
-        lastName: "Bot",
-        userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
-      }
-    }
+
     var response = GithubBotModel.find({ repoName: repoName }).then(map => {
       console.log(map);
       var channelId = map[0].channelId;
+      var message = {
+        messageBody: "Issue " + issue + "assigned to " + assignee,
+        timestamp: new Date().toISOString(),
+        isStarred: true,
+        channelId: channelId,
+        sender: {
+          id: "101010101010101010101010",
+          emailId: "tldm-github-bot@gmail.com",
+          firstName: "Github",
+          lastName: "Bot",
+          userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
+        }
+      }
       connection.invoke("sendMessageInChannel", "bot", message, channelId)
         .then(console.log("Hub Method Invoked"))
         .catch(err => console.error(err.toString()));
@@ -150,9 +152,10 @@ module.exports = app => {
       console.log(createdMapping);
 
       var message = {
-        messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + "Click on this url to intall the bot in your repository - https://github.com/apps/tldm-github-integration/installations/new",
+        messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + " Click on this url to intall the bot in your repository -<a>https://github.com/apps/tldm-github-integration/installations/new</a>",
         timestamp: new Date().toISOString(),
         isStarred: true,
+        channelId: channelId,
         sender: {
           id: "101010101010101010101010",
           emailId: "tldm-github-bot@gmail.com",
@@ -188,6 +191,7 @@ module.exports = app => {
             messageBody: "Issue Assigned",
             timestamp: new Date().toISOString(),
             isStarred: true,
+            channelId: channelId,
             sender: {
               id: "101010101010101010101010",
               emailId: "tldm-github-bot@gmail.com",
@@ -206,6 +210,7 @@ module.exports = app => {
             messageBody: "You have not authenticated your github account. Click on this url to authorize tracking of your repository - https://github.com/login/oauth/authorize/?client_id=Iv1.c540ce83a87ce61f&state=" + channelId + " and try again.",
             timestamp: new Date().toISOString(),
             isStarred: true,
+            channelId: channelId,
             sender: {
               id: "101010101010101010101010",
               emailId: "tldm-github-bot@gmail.com",
