@@ -10,9 +10,6 @@ module.exports = app => {
 
   const router = app.route('/github');
 
-  // const channelId = "5ba0f61fe3eaea16ecef82ff";
-
-
   router.get('/callback', async (req, res) => {
     const { code, state } = req.query;
     console.log(code, state);
@@ -40,19 +37,22 @@ module.exports = app => {
   XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
   WebSocket = require('websocket').w3cwebsocket;
 
+
+
+
   const connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://172.23.238.230:5004/chat")
+    .withUrl("http://localhost:80/connect/chat?access_token=\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRsZG0uZ2l0aHViLmJvdEBnbWFpbC5jb20ifQ.SzqZUQ_KLubRfbTkyEjypBUShrzaza58jHTHVx1hxsZunW2JenEZsqo2M6zMTeFxxaBelSXM4jVKp7iGjFtKpmFYbCoOJIXTqVQClar2lar8Rr8fmLPmlHyhSN9ClRv82D90vx_VvovZoXSOUVPv-J3sukiW6xvl7RJfRrOYIgE\"")
     .configureLogging(signalR.LogLevel.Information)
     .build();
 
   connection.start()
     .then(() => {
       console.log("Connection to hub started");
-      connection.invoke("sendToAllconnid", "tldm-github-bot@gmail.com")
+      connection.invoke("sendToAllconnid", "tldm.github.bot@gmail.com")
         .then(console.log("BOT IS NOW ONLINE!"))
         .catch(err => console.error(err.toString()));
 
-      axios.get('http://172.23.238.230:5004/api/chat/workspaces/userchannels/tldm-github-bot@gmail.com')
+      axios.get('http://localhost:80/connect/api/chat/workspaces/userchannels/tldm.github.bot@gmail.com?access_token=\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRsZG0uZ2l0aHViLmJvdEBnbWFpbC5jb20ifQ.SzqZUQ_KLubRfbTkyEjypBUShrzaza58jHTHVx1hxsZunW2JenEZsqo2M6zMTeFxxaBelSXM4jVKp7iGjFtKpmFYbCoOJIXTqVQClar2lar8Rr8fmLPmlHyhSN9ClRv82D90vx_VvovZoXSOUVPv-J3sukiW6xvl7RJfRrOYIgE\"', querystring.stringify({ access_token: 'bar' }))
         .then(function (response) {
           // handle success
           console.log(response.data);
@@ -68,25 +68,6 @@ module.exports = app => {
         .then(function () {
           // always executed
         });
-
-      // var message = {
-      //   messageId: "",
-      //   messageBody: "BOT ACTIVATED!",
-      //   timestamp: new Date().toISOString(),
-      //   isStarred: true,
-      //   sender: {
-      //     id: "101010101010101010101010",
-      //     emailId: "tldm-github-bot@gmail.com",
-      //     firstName: "Bot",
-      //     lastName: "User",
-      //     userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
-      //   }
-      // };
-      // console.log(message);
-      // const user = "bot";
-      // connection.invoke("sendMessageInChannel", user, message, channelId)
-      //   .then(console.log("Hub Method Invoked"))
-      //   .catch(err => console.error(err.toString()));
 
     })
     .catch(err => console.error(err.toString()));
@@ -116,7 +97,7 @@ module.exports = app => {
         channelId: channelId,
         sender: {
           id: "101010101010101010101010",
-          emailId: "tldm-github-bot@gmail.com",
+          emailId: "tldm.github.bot@gmail.com",
           firstName: "Github",
           lastName: "Bot",
           userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
@@ -158,7 +139,7 @@ module.exports = app => {
         channelId: channelId,
         sender: {
           id: "101010101010101010101010",
-          emailId: "tldm-github-bot@gmail.com",
+          emailId: "tldm.github.bot@gmail.com",
           firstName: "Bot",
           lastName: "User",
           userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
@@ -194,7 +175,7 @@ module.exports = app => {
             channelId: channelId,
             sender: {
               id: "101010101010101010101010",
-              emailId: "tldm-github-bot@gmail.com",
+              emailId: "tldm.github.bot@gmail.com",
               firstName: "Bot",
               lastName: "User",
               userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
@@ -213,7 +194,7 @@ module.exports = app => {
             channelId: channelId,
             sender: {
               id: "101010101010101010101010",
-              emailId: "tldm-github-bot@gmail.com",
+              emailId: "tldm.github.bot@gmail.com",
               firstName: "Bot",
               lastName: "User",
               userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
