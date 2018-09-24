@@ -37,11 +37,8 @@ module.exports = app => {
   XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
   WebSocket = require('websocket').w3cwebsocket;
 
-
-
-
   const connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://localhost:80/connect/chat?access_token=\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRsZG0uZ2l0aHViLmJvdEBnbWFpbC5jb20ifQ.SzqZUQ_KLubRfbTkyEjypBUShrzaza58jHTHVx1hxsZunW2JenEZsqo2M6zMTeFxxaBelSXM4jVKp7iGjFtKpmFYbCoOJIXTqVQClar2lar8Rr8fmLPmlHyhSN9ClRv82D90vx_VvovZoXSOUVPv-J3sukiW6xvl7RJfRrOYIgE\"")
+    .withUrl("http://172.23.238.206:7001/connect/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE")
     .configureLogging(signalR.LogLevel.Information)
     .build();
 
@@ -50,31 +47,27 @@ module.exports = app => {
       console.log("Connection to hub started");
       connection.invoke("sendToAllconnid", "tldm.github.bot@gmail.com")
         .then(console.log("BOT IS NOW ONLINE!"))
+        .catch(err => console.error(err.toString()))
+      connection.invoke("sendAllUserChannel", "tldm.github.bot@gmail.com")
+        .then(console.log("Requested for the list of channels where bot is installed"))
         .catch(err => console.error(err.toString()));
-
-      axios.get('http://localhost:80/connect/api/chat/workspaces/userchannels/tldm.github.bot@gmail.com?access_token=\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRsZG0uZ2l0aHViLmJvdEBnbWFpbC5jb20ifQ.SzqZUQ_KLubRfbTkyEjypBUShrzaza58jHTHVx1hxsZunW2JenEZsqo2M6zMTeFxxaBelSXM4jVKp7iGjFtKpmFYbCoOJIXTqVQClar2lar8Rr8fmLPmlHyhSN9ClRv82D90vx_VvovZoXSOUVPv-J3sukiW6xvl7RJfRrOYIgE\"', querystring.stringify({ access_token: 'bar' }))
-        .then(function (response) {
-          // handle success
-          console.log(response.data);
-          response.data.forEach(channelId => {
-            connection.invoke('joinChannel', channelId)
-              .catch(err => console.log(err));
-          });
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error);
-        })
-        .then(function () {
-          // always executed
-        });
-
     })
     .catch(err => console.error(err.toString()));
 
 
   // Your code here
-  app.log('Yay, the app was loaded!')
+  app.log('Yay, the app was loaded!');
+
+  connection.on("ReceiveUserChannels", (listofUserChannels) => {
+
+    console.log(listofUserChannels);
+
+    listofUserChannels.forEach(channelId => {
+      connection.invoke('joinChannel', channelId)
+        .catch(err => console.log(err));
+    });
+
+  });
 
 
 
@@ -104,7 +97,37 @@ module.exports = app => {
         }
       }
       connection.invoke("sendMessageInChannel", "bot", message, channelId)
-        .then(console.log("Hub Method Invoked"))
+        .then(console.log("An issue was assigned to someone on github"))
+        .catch(err => console.error(err.toString()));
+      return context.github.issues.createComment(issueComment);
+    })
+  });
+
+  app.on('issues.opened', async context => {
+    const issueComment = context.issue({ body: 'Thanks for opening this issue!' })
+    console.log(issueComment.repo)
+    assignedBy = context.payload.issue.user.login;
+    issue = context.payload.issue.title;
+    const user = "bot";
+    var repoName = context.payload.repository.full_name;
+    var response = GithubBotModel.find({ repoName: repoName }).then(map => {
+      console.log(map);
+      var channelId = map[0].channelId;
+      var message = {
+        messageBody: "Issue " + issue + " opened by " + assignedBy + " in repository " + repoName,
+        timestamp: new Date().toISOString(),
+        isStarred: true,
+        channelId: channelId,
+        sender: {
+          id: "101010101010101010101010",
+          emailId: "tldm.github.bot@gmail.com",
+          firstName: "Github",
+          lastName: "Bot",
+          userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
+        }
+      }
+      connection.invoke("sendMessageInChannel", "bot", message, channelId)
+        .then(console.log("An issue was assigned to someone on github"))
         .catch(err => console.error(err.toString()));
       return context.github.issues.createComment(issueComment);
     })
@@ -117,39 +140,71 @@ module.exports = app => {
   });
 
 
+
+
   connection.on("SendMessageInChannel", (user, message) => {
     channelId = message.channelId;
 
+
+
     if (message.messageBody.startsWith('/github subscribe')) {
 
-      console.log(message);
+      GithubBotModel.find({}).then(map => {
+        if (map != null) {
+          map.forEach(obj => {
+            if (obj.repoName == message.messageBody.slice(18)) {
+              var message1 = {
+                messageBody: "Someone has already subscribed to this repository!!!",
+                timestamp: new Date().toISOString(),
+                isStarred: true,
+                channelId: channelId,
+                sender: {
+                  id: "101010101010101010101010",
+                  emailId: "tldm.github.bot@gmail.com",
+                  firstName: "Bot",
+                  lastName: "User",
+                  userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
+                }
+              }
 
-      const githubTLDMMapping = new GithubBotModel({
-        repoName: message.messageBody.slice(18),
-        channelId: channelId,
-        access_token: null
-      });
-      const createdMapping = githubTLDMMapping.save();
-      console.log(createdMapping);
+              connection.invoke("sendMessageInChannel", "bot", message1, channelId)
+                .then(console.log("Hub Method Invoked"))
+                .catch(err => console.error(err.toString()));
+            }
 
-      var message = {
-        messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + " Click on this url to intall the bot in your repository -<a>https://github.com/apps/tldm-github-integration/installations/new</a>",
-        timestamp: new Date().toISOString(),
-        isStarred: true,
-        channelId: channelId,
-        sender: {
-          id: "101010101010101010101010",
-          emailId: "tldm.github.bot@gmail.com",
-          firstName: "Bot",
-          lastName: "User",
-          userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
+            else {
+
+              console.log(message);
+
+              const githubTLDMMapping = new GithubBotModel({
+                repoName: message.messageBody.slice(18),
+                channelId: channelId,
+                access_token: null
+              });
+              const createdMapping = githubTLDMMapping.save();
+              console.log(createdMapping);
+
+              var message2 = {
+                messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + " Click on this url to intall the bot in your repository -<a>https://github.com/apps/tldm-github-integration/installations/new</a>",
+                timestamp: new Date().toISOString(),
+                isStarred: true,
+                channelId: channelId,
+                sender: {
+                  id: "101010101010101010101010",
+                  emailId: "tldm.github.bot@gmail.com",
+                  firstName: "Bot",
+                  lastName: "User",
+                  userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
+                }
+              }
+
+              connection.invoke("sendMessageInChannel", "bot", message2, channelId)
+                .then(console.log("Hub Method Invoked"))
+                .catch(err => console.error(err.toString()));
+            }
+          })
         }
-      }
-
-      connection.invoke("sendMessageInChannel", "bot", message, channelId)
-        .then(console.log("Hub Method Invoked"))
-        .catch(err => console.error(err.toString()));
-
+      });
     }
 
     if (message.messageBody.startsWith('/github addAssigneeToIssue')) {
@@ -206,6 +261,32 @@ module.exports = app => {
         }
 
       });
+
+    }
+
+    if (message.messageBody.startsWith("/github unsubscribe")) {
+
+      GithubBotModel.find({ channelId: message.messageBody.channelId }).then(searchByChannelId => {
+        console.log("This is search result token " + searchByChannelId[0]);
+        GithubBotModel.findByIdAndRemove(searchByChannelId[0]._id, { new: true }).then(reponse => console.log(response));
+      });
+
+      var message = {
+        messageBody: "Repository unsubscribed",
+        timestamp: new Date().toISOString(),
+        isStarred: true,
+        channelId: channelId,
+        sender: {
+          id: "101010101010101010101010",
+          emailId: "tldm.github.bot@gmail.com",
+          firstName: "Bot",
+          lastName: "User",
+          userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
+        }
+      }
+      connection.invoke("sendMessageInChannel", "bot", message, channelId)
+        .then(console.log("Hub Method Invoked"))
+        .catch(err => console.error(err.toString()));
 
     }
   });
