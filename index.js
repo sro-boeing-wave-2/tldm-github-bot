@@ -38,7 +38,8 @@ module.exports = app => {
   WebSocket = require('websocket').w3cwebsocket;
 
   const connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://localhost:80/connect/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE")
+    .withUrl("http://13.233.42.222/connect/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE")
+    //.withUrl("http://172.23.238.206:7001/connect/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE")
     .configureLogging(signalR.LogLevel.Information)
     .build();
 
@@ -273,6 +274,27 @@ module.exports = app => {
 
       var message = {
         messageBody: "Repository unsubscribed",
+        timestamp: new Date().toISOString(),
+        isStarred: true,
+        channelId: channelId,
+        sender: {
+          id: "101010101010101010101010",
+          emailId: "tldm.github.bot@gmail.com",
+          firstName: "Bot",
+          lastName: "User",
+          userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
+        }
+      }
+      connection.invoke("sendMessageInChannel", "bot", message, channelId)
+        .then(console.log("Hub Method Invoked"))
+        .catch(err => console.error(err.toString()));
+
+    }
+
+    if (message.messageBody.startsWith("/github help")) {
+
+      var message = {
+        messageBody: "Need some help with /github ? <br> 1. Subscribe to notifications for a repository: /github subscribe owner/repository <br> 2. Unsubscribe to notifications for a repository: /github unsubscribe <br> 3. Add assigneed to an issue: /github addAssigneeToIssue owner repository issueNumber assigne",
         timestamp: new Date().toISOString(),
         isStarred: true,
         channelId: channelId,
