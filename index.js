@@ -26,7 +26,7 @@ module.exports = app => {
         access_token: access_token,
         channelId: searchByChannelId[0].channelId,
         repoName: searchByChannelId[0].repoName
-      }, { new: true }).then(reponse => console.log(response))
+      }, { new: true }).then(response => console.log(response))
     });
 
     console.log(access_token);
@@ -38,8 +38,8 @@ module.exports = app => {
   WebSocket = require('websocket').w3cwebsocket;
 
   const connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://13.233.42.222/connect/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE")
-    //.withUrl("http://172.23.238.206:7001/connect/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE")
+    //.withUrl("http://13.233.42.222/connect/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE")
+    .withUrl("http://172.23.238.206:7001/connect/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE")
     .configureLogging(signalR.LogLevel.Information)
     .build();
 
@@ -97,9 +97,19 @@ module.exports = app => {
           userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
         }
       }
-      connection.invoke("sendMessageInChannel", "bot", message, channelId)
-        .then(console.log("An issue was assigned to someone on github"))
-        .catch(err => console.error(err.toString()));
+      axios.get('http://172.23.238.206:7001/connect/api/chat/workspaces/workspacename/' + channelId)
+        .then(response => {
+          console.log("Getting workspace name");
+          workspacename = response.data;
+          console.log(workspacename);
+          connection.invoke("sendMessageInChannel", "entre.bot@gmail.com", message, channelId, workspacename)
+            .then(console.log("Hub Method Invoked"))
+            .catch(err => console.error(err.toString()));
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
       return context.github.issues.createComment(issueComment);
     })
   });
@@ -127,9 +137,19 @@ module.exports = app => {
           userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
         }
       }
-      connection.invoke("sendMessageInChannel", "bot", message, channelId)
-        .then(console.log("An issue was assigned to someone on github"))
-        .catch(err => console.error(err.toString()));
+      axios.get('http://172.23.238.206:7001/connect/api/chat/workspaces/workspacename/' + channelId)
+        .then(response => {
+          console.log("Getting workspace name");
+          workspacename = response.data;
+          console.log(workspacename);
+          connection.invoke("sendMessageInChannel", "tldm.github.bot@gmail.com", message, channelId, workspacename)
+            .then(console.log("Hub Method Invoked"))
+            .catch(err => console.error(err.toString()));
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
       return context.github.issues.createComment(issueComment);
     })
   });
@@ -151,7 +171,11 @@ module.exports = app => {
     if (message.messageBody.startsWith('/github subscribe')) {
 
       GithubBotModel.find({}).then(map => {
-        if (map != null) {
+        console.log("Looking for entries in DB");
+        console.log(map);
+        flag = 0;
+        if (map.length != 0) {
+          console.log("Found something in DB!!!");
           map.forEach(obj => {
             if (obj.repoName == message.messageBody.slice(18)) {
               var message1 = {
@@ -167,43 +191,64 @@ module.exports = app => {
                   userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
                 }
               }
+              flag = 1;
 
-              connection.invoke("sendMessageInChannel", "bot", message1, channelId)
-                .then(console.log("Hub Method Invoked"))
-                .catch(err => console.error(err.toString()));
+              axios.get('http://172.23.238.206:7001/connect/api/chat/workspaces/workspacename/' + channelId)
+                .then(response => {
+                  console.log("Getting workspace name");
+                  workspacename = response.data;
+                  console.log(workspacename);
+                  connection.invoke("sendMessageInChannel", "tldm.github.bot@gmail.com", message1, channelId, workspacename)
+                    .then(console.log("Hub Method Invoked"))
+                    .catch(err => console.error(err.toString()));
+                })
+                .catch(error => {
+                  console.log(error);
+                });
+
             }
 
-            else {
-
-              console.log(message);
-
-              const githubTLDMMapping = new GithubBotModel({
-                repoName: message.messageBody.slice(18),
-                channelId: channelId,
-                access_token: null
-              });
-              const createdMapping = githubTLDMMapping.save();
-              console.log(createdMapping);
-
-              var message2 = {
-                messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + " Click on this url to intall the bot in your repository -<a>https://github.com/apps/tldm-github-integration/installations/new</a>",
-                timestamp: new Date().toISOString(),
-                isStarred: true,
-                channelId: channelId,
-                sender: {
-                  id: "101010101010101010101010",
-                  emailId: "tldm.github.bot@gmail.com",
-                  firstName: "Bot",
-                  lastName: "User",
-                  userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
-                }
-              }
-
-              connection.invoke("sendMessageInChannel", "bot", message2, channelId)
-                .then(console.log("Hub Method Invoked"))
-                .catch(err => console.error(err.toString()));
-            }
           })
+        }
+        if (map.length == 0 || flag == 0) {
+
+          console.log(message);
+
+          const githubTLDMMapping = new GithubBotModel({
+            repoName: message.messageBody.slice(18),
+            channelId: channelId,
+            access_token: null
+          });
+          const createdMapping = githubTLDMMapping.save();
+          console.log(createdMapping);
+
+          var message2 = {
+            messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + " Click on this url to intall the bot in your repository -<a>https://github.com/apps/tldm-github-integration/installations/new</a>",
+            timestamp: new Date().toISOString(),
+            isStarred: true,
+            channelId: channelId,
+            sender: {
+              id: "101010101010101010101010",
+              emailId: "tldm.github.bot@gmail.com",
+              firstName: "Bot",
+              lastName: "User",
+              userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
+            }
+          }
+
+          axios.get('http://172.23.238.206:7001/connect/api/chat/workspaces/workspacename/' + channelId)
+            .then(response => {
+              console.log("Getting workspace name");
+              workspacename = response.data;
+              console.log(workspacename);
+              connection.invoke("sendMessageInChannel", "tldm.github.bot@gmail.com", message2, channelId, workspacename)
+                .then(console.log("Hub Method Invoked"))
+                .catch(err => console.error(err.toString()));
+            })
+            .catch(error => {
+              console.log(error);
+            });
+
         }
       });
     }
@@ -224,22 +269,7 @@ module.exports = app => {
           number = splitmessage[4];
           assignees = splitmessage[5];
           octokit.issues.addAssigneesToIssue({ owner: owner, repo: repo, number: number, assignees: assignees })
-          var message = {
-            messageBody: "Issue Assigned",
-            timestamp: new Date().toISOString(),
-            isStarred: true,
-            channelId: channelId,
-            sender: {
-              id: "101010101010101010101010",
-              emailId: "tldm.github.bot@gmail.com",
-              firstName: "Bot",
-              lastName: "User",
-              userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
-            }
-          }
-          connection.invoke("sendMessageInChannel", "bot", message, channelId)
-            .then(console.log("Hub Method Invoked"))
-            .catch(err => console.error(err.toString()));
+
         }
 
         else {
@@ -256,9 +286,19 @@ module.exports = app => {
               userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
             }
           }
-          connection.invoke("sendMessageInChannel", "bot", message, channelId)
-            .then(console.log("Hub Method Invoked"))
-            .catch(err => console.error(err.toString()));
+          axios.get('http://172.23.238.206:7001/connect/api/chat/workspaces/workspacename/' + channelId)
+            .then(response => {
+              console.log("Getting workspace name");
+              workspacename = response.data;
+              console.log(workspacename);
+              connection.invoke("sendMessageInChannel", "entre.bot@gmail.com", message, channelId, workspacename)
+                .then(console.log("Hub Method Invoked"))
+                .catch(err => console.error(err.toString()));
+            })
+            .catch(error => {
+              console.log(error);
+            });
+
         }
 
       });
@@ -306,9 +346,18 @@ module.exports = app => {
           userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
         }
       }
-      connection.invoke("sendMessageInChannel", "bot", message, channelId)
-        .then(console.log("Hub Method Invoked"))
-        .catch(err => console.error(err.toString()));
+      axios.get('http://172.23.238.206:7001/connect/api/chat/workspaces/workspacename/' + message.channelId)
+        .then(response => {
+          console.log("Getting workspace name");
+          workspacename = response.data;
+          console.log(workspacename);
+          connection.invoke("sendMessageInChannel", "tldm.github.bot@gmail.com", message, channelId, workspacename)
+            .then(console.log("Hub Method Invoked"))
+            .catch(err => console.error(err.toString()));
+        })
+        .catch(error => {
+          console.log(error);
+        });
 
     }
   });
