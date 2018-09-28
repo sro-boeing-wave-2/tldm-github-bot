@@ -37,9 +37,9 @@ module.exports = app => {
   XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
   WebSocket = require('websocket').w3cwebsocket;
 
-  //var chatHubUrl = "http://172.23.239.243:7001/chat-hub/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE";
+  //var chatHubUrl = "http://172.23.238.206:7001/chat-api/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE";
   var chatHubUrl = "http://13.233.42.222/chat-api/chat";
-  //var chatApiUrl = "http://172.23.239.243:7001/chat-api/chat/workspaces/workspacename/";
+  //var chatApiUrl = "http://172.23.238.206:7001/chat-api/api/chat/workspaces/workspacename/";
   var chatApiUrl = "http://13.233.42.222/chat-api/api/chat/workspaces/workspacename/"
 
   const connection = new signalR.HubConnectionBuilder()
@@ -194,7 +194,7 @@ module.exports = app => {
                 sender: {
                   id: "101010101010101010101010",
                   emailId: "tldm.github.bot@gmail.com",
-                  firstName: "Bot",
+                  firstName: "Github",
                   lastName: "User",
                   userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
                 }
@@ -231,15 +231,15 @@ module.exports = app => {
           console.log(createdMapping);
 
           var message2 = {
-            messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + " Click on this url to intall the bot in your repository -<a>https://github.com/apps/tldm-github-integration/installations/new</a>",
+            messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + " Click below to install the bot in your repository -<button><a href= 'https://github.com/apps/tldm-github-integration/installations/new' target='_blank'>Connect</a></button>",
             timestamp: new Date().toISOString(),
             isStarred: true,
             channelId: channelId,
             sender: {
               id: "101010101010101010101010",
               emailId: "tldm.github.bot@gmail.com",
-              firstName: "Bot",
-              lastName: "User",
+              firstName: "Github",
+              lastName: "Bot",
               userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
             }
           }
@@ -289,8 +289,8 @@ module.exports = app => {
             sender: {
               id: "101010101010101010101010",
               emailId: "tldm.github.bot@gmail.com",
-              firstName: "Bot",
-              lastName: "User",
+              firstName: "Github",
+              lastName: "Bot",
               userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
             }
           }
@@ -315,9 +315,9 @@ module.exports = app => {
 
     if (message.messageBody.startsWith("/github unsubscribe")) {
 
-      GithubBotModel.find({ channelId: message.messageBody.channelId }).then(searchByChannelId => {
-        console.log("This is search result token " + searchByChannelId[0]);
-        GithubBotModel.findByIdAndRemove(searchByChannelId[0]._id, { new: true }).then(reponse => console.log(response));
+      GithubBotModel.find({ channelId: message.channelId }).then(searchByChannelId => {
+        console.log("This is to be deleted! " + searchByChannelId[0]);
+        GithubBotModel.findByIdAndRemove(searchByChannelId[0]._id).then(response => console.log(response));
       });
 
       var message = {
@@ -328,14 +328,23 @@ module.exports = app => {
         sender: {
           id: "101010101010101010101010",
           emailId: "tldm.github.bot@gmail.com",
-          firstName: "Bot",
-          lastName: "User",
+          firstName: "Github",
+          lastName: "Bot",
           userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
         }
       }
-      connection.invoke("sendMessageInChannel", "bot", message, channelId)
-        .then(console.log("Hub Method Invoked"))
-        .catch(err => console.error(err.toString()));
+      axios.get(chatApiUrl + channelId)
+        .then(response => {
+          console.log("Getting workspace name");
+          workspacename = response.data;
+          console.log(workspacename);
+          connection.invoke("sendMessageInChannel", "entre.bot@gmail.com", message, channelId, workspacename)
+            .then(console.log("Hub Method Invoked"))
+            .catch(err => console.error(err.toString()));
+        })
+        .catch(error => {
+          console.log(error);
+        });
 
     }
 
@@ -349,8 +358,8 @@ module.exports = app => {
         sender: {
           id: "101010101010101010101010",
           emailId: "tldm.github.bot@gmail.com",
-          firstName: "Bot",
-          lastName: "User",
+          firstName: "Github",
+          lastName: "Bot",
           userId: "60681125-e117-4bb2-9287-eb840c4cf67e"
         }
       }
