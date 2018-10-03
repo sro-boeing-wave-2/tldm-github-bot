@@ -37,10 +37,10 @@ module.exports = app => {
   XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
   WebSocket = require('websocket').w3cwebsocket;
 
-  //var chatHubUrl = "http://172.23.238.206:7001/chat-api/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE";
   var chatHubUrl = "http://13.233.42.222/chat-api/chat";
-  //var chatApiUrl = "http://172.23.238.206:7001/chat-api/api/chat/workspaces/workspacename/";
   var chatApiUrl = "http://13.233.42.222/chat-api/api/chat/workspaces/workspacename/"
+  //var chatHubUrl = "http://172.23.238.206:7001/chat-api/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE";
+  //var chatApiUrl = "http://172.23.238.206:7001/chat-api/api/chat/workspaces/workspacename/";
 
   const connection = new signalR.HubConnectionBuilder()
     .withUrl(chatHubUrl)
@@ -59,13 +59,21 @@ module.exports = app => {
     })
     .catch(err => console.error(err.toString()));
 
+  connection.onclose(function () {
+    console.log("DISCONNECTED!!");
+    process.exit();
+
+  })
 
   // Your code here
   app.log('Yay, the app was loaded!');
 
   connection.on("ReceiveUserChannels", (listofUserChannels, emailId) => {
+    console.log("Receiving...");
 
     if (emailId == "tldm.github.bot@gmail.com") {
+      console.log("Received list of user channels")
+
       console.log(listofUserChannels);
 
       listofUserChannels.forEach(channelId => {
@@ -93,8 +101,8 @@ module.exports = app => {
       console.log(map);
       var channelId = map[0].channelId;
       var message = {
-        messageBody: "Issue " + issue + "assigned to " + assignee,
-        timestamp: new Date().toISOString(),
+        messageBody: "<img src='https://melbournechapter.net/images/vector-gif-2.gif' style='height: 100px; width: 100px'><br><br> Issue <b>" + issue + " </b>assigned to <b>" + assignee + "</b>",
+        timestamp: new Date().toLocaleTimeString(),
         isStarred: true,
         channelId: channelId,
         sender: {
@@ -133,8 +141,8 @@ module.exports = app => {
       console.log(map);
       var channelId = map[0].channelId;
       var message = {
-        messageBody: "Issue " + issue + " opened by " + assignedBy + " in repository " + repoName,
-        timestamp: new Date().toISOString(),
+        messageBody: "<img src='https://mbtskoudsalg.com/images/animation-vector-technology-1.gif' style='height: 100px; width: 100px'><br><br>Issue <b>" + issue + "</b> opened by <b>" + assignedBy + "</b> in repository <b>" + repoName + "</b>",
+        timestamp: new Date().toLocaleTimeString(),
         isStarred: true,
         channelId: channelId,
         sender: {
@@ -187,8 +195,8 @@ module.exports = app => {
           map.forEach(obj => {
             if (obj.repoName == message.messageBody.slice(18)) {
               var message1 = {
-                messageBody: "Someone has already subscribed to this repository!!!",
-                timestamp: new Date().toISOString(),
+                messageBody: "<img src='https://loading.io/assets/img/animation/icon/showcase/robot.svg' style='height: 100px; width: 100px'><br>Someone has already subscribed to this repository!!!",
+                timestamp: new Date().toLocaleTimeString(),
                 isStarred: true,
                 channelId: channelId,
                 sender: {
@@ -231,8 +239,8 @@ module.exports = app => {
           console.log(createdMapping);
 
           var message2 = {
-            messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + " Click below to install the bot in your repository -<button><a href= 'https://github.com/apps/tldm-github-integration/installations/new' target='_blank'>Connect</a></button>",
-            timestamp: new Date().toISOString(),
+            messageBody: "You have subscribed to notifications from " + message.messageBody.slice(18) + "<br><img src='http://www.svbiotech.in/images/loader.gif' style='height: 100px; width: 100px;'<br> <br>Click below to install the bot in your repository -<a href= 'https://github.com/apps/tldm-github-integration/installations/new' target='_blank'>Connect</a>",
+            timestamp: new Date().toLocaleTimeString(),
             isStarred: true,
             channelId: channelId,
             sender: {
@@ -282,8 +290,8 @@ module.exports = app => {
 
         else {
           var message = {
-            messageBody: "You have not authenticated your github account. Click on this url to authorize tracking of your repository - https://github.com/login/oauth/authorize/?client_id=Iv1.c540ce83a87ce61f&state=" + channelId + " and try again.",
-            timestamp: new Date().toISOString(),
+            messageBody: "You have not authenticated your github account.<br><img src='https://onetwopixel.com/wp-content/uploads/2018/02/animat-lock-color.gif' style='height: 100px; width: 100px'><br> Click below to authorize tracking of your repository - <a href='https://github.com/login/oauth/authorize/?client_id=Iv1.c540ce83a87ce61f&state=" + channelId + "'> Authorize </a> and try again.",
+            timestamp: new Date().toLocaleTimeString(),
             isStarred: true,
             channelId: channelId,
             sender: {
@@ -321,8 +329,8 @@ module.exports = app => {
       });
 
       var message = {
-        messageBody: "Repository unsubscribed",
-        timestamp: new Date().toISOString(),
+        messageBody: "<img src='https://uploads-ssl.webflow.com/5a4e28c03c5d8600019aae5b/5b101fbfc23e001b53858f2e_565%20Trash%20bin.gif' style='height: 100px; width: 100px'>Repository unsubscribed",
+        timestamp: new Date().toLocaleTimeString(),
         isStarred: true,
         channelId: channelId,
         sender: {
@@ -351,8 +359,8 @@ module.exports = app => {
     if (message.messageBody.startsWith("/github help")) {
 
       var message = {
-        messageBody: "Need some help with /github ? <br> 1. Subscribe to notifications for a repository: /github subscribe owner/repository <br> 2. Unsubscribe to notifications for a repository: /github unsubscribe <br> 3. Add assigneed to an issue: /github addAssigneeToIssue owner repository issueNumber assigne",
-        timestamp: new Date().toISOString(),
+        messageBody: "<h4>Need some help with /github ? </h4><br><img src='http://www.blitzreach.com/images/brisbot-anim.gif' style='height: 80px; width: 130px'><br><br> 1. <b><i> /github subscribe [owner]/[repository] :</b></i> Subscribe to notifications for a repository<br> 2. <b><i>/github unsubscribe :</b></i> Unsubscribe to notifications for a repository<br> 3. <b><i>/github addAssigneeToIssue [owner] [repository] [issueNumber] [assignee] : </b></i>Add assignee to an issue",
+        timestamp: new Date().toLocaleTimeString(),
         isStarred: true,
         channelId: channelId,
         sender: {

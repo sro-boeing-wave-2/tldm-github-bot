@@ -5,6 +5,7 @@ services:
     labels:
       - "SERVICE_8080_NAME=github-bot-service"
       - "SERVICE_TAG=github-bot-serviceTag"
+    restart: always
     # ports:
     # - "8080:8080"
     depends_on:
