@@ -290,7 +290,7 @@ module.exports = app => {
 
         else {
           var message = {
-            messageBody: "You have not authenticated your github account.<br><img src='https://onetwopixel.com/wp-content/uploads/2018/02/animat-lock-color.gif' style='height: 100px; width: 100px'><br> Click below to authorize tracking of your repository - <a href='https://github.com/login/oauth/authorize/?client_id=Iv1.c540ce83a87ce61f&state=" + channelId + "'> Authorize </a> and try again.",
+            messageBody: "You have not authenticated your github account.<br><img src='https://onetwopixel.com/wp-content/uploads/2018/02/animat-lock-color.gif' style='height: 100px; width: 100px'><br> Click below to authorize tracking of your repository - <a href='https://github.com/login/oauth/authorize/?client_id=Iv1.c540ce83a87ce61f&state=" + channelId + "' target='_blank'> Authorize </a> and try again.",
             timestamp: new Date().toLocaleTimeString(),
             isStarred: true,
             channelId: channelId,
