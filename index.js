@@ -37,10 +37,10 @@ module.exports = app => {
   XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
   WebSocket = require('websocket').w3cwebsocket;
 
-  //var chatHubUrl = "http://13.233.42.222/chat-api/chat";
-  //var chatApiUrl = "http://13.233.42.222/chat-api/api/chat/workspaces/workspacename/"
-  var chatHubUrl = "http://172.23.238.206:7001/chat-api/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE";
-  var chatApiUrl = "http://172.23.238.206:7001/chat-api/api/chat/workspaces/workspacename/";
+  var chatHubUrl = "http://13.233.42.222/chat-api/chat";
+  var chatApiUrl = "http://13.233.42.222/chat-api/api/chat/workspaces/workspacename/"
+  //var chatHubUrl = "http://172.23.238.206:7001/chat-api/chat?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhyaXNoaXBvdGRhcjIzQGdtYWlsLmNvbSIsIlVzZXJJRCI6ImVlYWEyZTMxLWIyMTItNGJlZi04ZjgxLWE3MGQ3NDIyNTczNiJ9.JwlZpHZ3xv8hQXSyGs9SIqGFpqCBiGogfKNuItz-TvYWj9MQEZpwqSvme--y2cOTxLE124IKvSVbO_rFNRI3NIl3Y5CkjAH5iZOFuqDHLYFeKlKYsmHdC7j_PEYay_u6YQQZwSAOrsmRJhQ7Tdx7L8RPptnqrg8fZqgrGPVIkNE";
+  //var chatApiUrl = "http://172.23.238.206:7001/chat-api/api/chat/workspaces/workspacename/";
 
   const connection = new signalR.HubConnectionBuilder()
     .withUrl(chatHubUrl)
