@@ -3,7 +3,7 @@ services:
   web:
     build: .
     labels:
-      - "SERVICE_8080_NAME=github-bot-service"
+      - "SERVICE_3000_NAME=github-bot-service"
       - "SERVICE_TAG=github-bot-serviceTag"
     restart: always
     # ports:
